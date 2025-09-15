@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Sensor.Service.Data;
 using Shared.Contracts;
 
 namespace Sensor.Service;
@@ -5,43 +7,57 @@ namespace Sensor.Service;
 public class SensorService : Shared.Contracts.ISensorService
 {
     private readonly string _sensorId;
-    private readonly Random _rng = new();
-    private double _last = 20.0; // placeholder
-    private bool _running;
+    private readonly SensorDbContext _db;
+    private readonly ISamplingSwitch _switch;
 
-    public SensorService(string sensorId)
+    public SensorService(string sensorId, SensorDbContext db, ISamplingSwitch samplingSwitch)
     {
         _sensorId = sensorId;
+        _db = db;
+        _switch = samplingSwitch;
     }
 
-    public void Start()
-    {
-        _running = true;
-        // Phase 1 will replace this with a real background loop + EF writes
-    }
-
-    public void Stop() => _running = false;
+    public void Start() => _switch.Enabled = true;
+    public void Stop() => _switch.Enabled = false;
 
     public double GetLatest()
     {
-        // Phase 1: read latest from DB. For now, return a jittered value.
-        var delta = (_rng.NextDouble() - 0.5) * 0.5;
-        _last = Math.Clamp(_last + delta, -30, 60);
-        return _last;
+        var latest = _db.Readings
+            .OrderByDescending(r => r.Timestamp)
+            .Select(r => (double?)r.TemperatureC)
+            .FirstOrDefault();
+        return latest ?? 20.0;
     }
 
     public SensorSnapshot GetSnapshot(TimeSpan lookback)
     {
         var now = DateTimeOffset.UtcNow;
-        var values = Enumerable.Range(0, 10).Select(_ => GetLatest()).ToArray();
+        var from = now - lookback;
+        var vals = _db.Readings
+            .Where(r => r.Timestamp >= from && r.Timestamp <= now)
+            .OrderBy(r => r.Timestamp)
+            .Select(r => r.TemperatureC)
+            .ToArray();
 
         return new SensorSnapshot
         {
             SensorId = _sensorId,
-            From = now - lookback,
+            From = from,
             To = now,
-            Values = values
+            Values = vals
         };
     }
 
+    // NEW
+    public void AppendReconciled(double value)
+    {
+        _db.Readings.Add(new SensorReading
+        {
+            SensorId = _sensorId,
+            Timestamp = DateTimeOffset.UtcNow,
+            TemperatureC = value,
+            IsReconciled = true
+        });
+        _db.SaveChanges();
+    }
 }

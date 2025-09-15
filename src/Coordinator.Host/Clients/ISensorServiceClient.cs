@@ -1,8 +1,8 @@
 using System;
 using System.ServiceModel;
-using Shared.Contracts; // for SensorSnapshot DTO
+using Shared.Contracts;
 
-namespace Client.CLI.Contracts
+namespace Coordinator.Host.Clients
 {
     [ServiceContract(Name = "ISensorService", Namespace = "http://tempuri.org/")]
     public interface ISensorServiceClient
@@ -11,5 +11,6 @@ namespace Client.CLI.Contracts
         [OperationContract] SensorSnapshot GetSnapshot(TimeSpan lookback);
         [OperationContract] void Start();
         [OperationContract] void Stop();
+        [OperationContract] void AppendReconciled(double value);
     }
 }

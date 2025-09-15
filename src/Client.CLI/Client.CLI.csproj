@@ -9,7 +9,6 @@
     <ProjectReference Include="..\Shared.Contracts\Shared.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <!-- WCF client packages -->
     <PackageReference Include="System.ServiceModel.Http" Version="4.10.3" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.3" />
   </ItemGroup>

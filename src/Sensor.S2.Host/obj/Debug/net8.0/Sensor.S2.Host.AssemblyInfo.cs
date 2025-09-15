@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sensor.S2.Host")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+44be1d06ae1f65faa1cfd0f56f9b256cd91506df")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75aac53389a7a11cba8b2afa8497e88301301160")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sensor.S2.Host")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sensor.S2.Host")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

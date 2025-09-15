@@ -1,14 +1,36 @@
 using CoreWCF;
 using CoreWCF.Configuration;
-using Shared.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Sensor.Service;
+using Sensor.Service.Data;
+using Shared.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://localhost:5013");
 builder.Services.AddServiceModelServices();
 
-// Register the service instance with its sensorId
-builder.Services.AddSingleton(new SensorService("S3"));
+// Data folder beside the executable
+var dataDir = Path.Combine(AppContext.BaseDirectory, "data");
+Directory.CreateDirectory(dataDir);
+
+// SQLite per-sensor DB
+var cs = $"Data Source={Path.Combine(dataDir, "s3.db")}";
+builder.Services.AddDbContext<SensorDbContext>(opt => opt.UseSqlite(cs));
+
+// Sampling switch & hosted worker
+builder.Services.AddSingleton<ISamplingSwitch, SamplingSwitch>();
+builder.Services.AddHostedService(sp => new SamplerWorker(
+    sp.GetRequiredService<ILogger<SamplerWorker>>(),
+    sp,
+    sp.GetRequiredService<ISamplingSwitch>(),
+    "S3"
+));
+
+// CoreWCF service
+builder.Services.AddScoped<SensorService>(sp =>
+    new SensorService("S3",
+        sp.GetRequiredService<SensorDbContext>(),
+        sp.GetRequiredService<ISamplingSwitch>()));
 
 var app = builder.Build();
 app.UseServiceModel(serviceBuilder =>
@@ -17,4 +39,5 @@ app.UseServiceModel(serviceBuilder =>
     serviceBuilder.AddServiceEndpoint<SensorService, ISensorService>(new BasicHttpBinding(), "/sensor");
 });
 
+Console.WriteLine("S3 listening at http://localhost:5013/sensor (BasicHttpBinding)");
 app.Run();
