@@ -1,29 +1,44 @@
 using CoreWCF;
 using CoreWCF.Configuration;
-using CoreWCF.Description;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Shared.Contracts;
-using Coordinator.Host;
+using System.ServiceModel;
+using HostBinding = CoreWCF.BasicHttpBinding;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://localhost:5020");
-builder.Services.AddServiceModelServices();
 
-builder.Services.AddSingleton<CoordinatorService>();
-builder.Services.AddHostedService<ReconcilerWorker>();
-
-var app = builder.Build();
-app.UseServiceModel(s =>
-{
-    s.AddService<CoordinatorService>();
-    s.ConfigureServiceHostBase<CoordinatorService>(host =>
+var builder = Host.CreateDefaultBuilder(args)
+    .ConfigureLogging(l => l.AddConsole())
+    .ConfigureServices((ctx, services) =>
     {
-        var dbg = host.Description.Behaviors.Find<ServiceDebugBehavior>();
-        if (dbg == null)
-            host.Description.Behaviors.Add(new ServiceDebugBehavior { IncludeExceptionDetailInFaults = true });
-        else
-            dbg.IncludeExceptionDetailInFaults = true;
+        services.AddServiceModelServices();
+        services.AddSingleton<CoordinatorService>();         // WCF service impl
+        services.AddHostedService<ReconcilerWorker>();       // minute scheduler
+
+        // channel factories used by Coordinator to call sensors
+        services.AddSingleton<ChannelFactory<ISensorService>>(
+            _ => ChannelFactoryHelpers.CreateSensor("http://localhost:5011/sensor"));
+        services.AddSingleton<ChannelFactory<ISensorService>>(
+            _ => ChannelFactoryHelpers.CreateSensor("http://localhost:5012/sensor"));
+        services.AddSingleton<ChannelFactory<ISensorService>>(
+            _ => ChannelFactoryHelpers.CreateSensor("http://localhost:5013/sensor"));
+
+
+
+    })
+    .ConfigureWebHostDefaults(webBuilder =>
+    {
+        webBuilder.UseUrls("http://localhost:5020");
+        webBuilder.Configure(app =>
+        {
+            app.UseServiceModel(sb =>
+            {
+                sb.AddService<CoordinatorService>();
+                sb.AddServiceEndpoint<CoordinatorService, ICoordinatorService>(
+                    new HostBinding(), "/coord");
+            });
+        });
     });
-    s.AddServiceEndpoint<CoordinatorService, ICoordinatorService>(new BasicHttpBinding(), "/coord");
-});
-Console.WriteLine("Coordinator listening at http://localhost:5020/coord (BasicHttpBinding)");
-app.Run();
+
+await builder.Build().RunAsync();

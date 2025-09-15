@@ -1,16 +1,31 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Shared.Contracts;
-using Coordinator.Host.Clients;
-
-namespace Coordinator.Host;
 
 public class CoordinatorService : ICoordinatorService
 {
-    private volatile bool _inProgress;
+    private readonly ILogger<CoordinatorService> _log;
+    private readonly ChannelFactory<ISensorService>[] _sensors;
+
     private readonly SemaphoreSlim _mutex = new(1, 1);
+    private volatile bool _inProgress;
+
+    public CoordinatorService(
+        ILogger<CoordinatorService> log,
+        IEnumerable<ChannelFactory<ISensorService>> sensors)
+    {
+        _log = log;
+        _sensors = sensors?.ToArray() ?? Array.Empty<ChannelFactory<ISensorService>>();
+        if (_sensors.Length < 3)
+            throw new InvalidOperationException(
+                $"Expected 3 sensor channel factories, got {_sensors.Length}. " +
+                "Check Program.cs registrations for CreateSensor(...).");
+    }
 
     public bool IsReconInProgress() => _inProgress;
 
@@ -20,24 +35,28 @@ public class CoordinatorService : ICoordinatorService
         _inProgress = true;
         try
         {
-            var s1 = Sensor(Ports.S1);
-            var s2 = Sensor(Ports.S2);
-            var s3 = Sensor(Ports.S3);
+            var ch1 = _sensors[0].CreateChannel();
+            var ch2 = _sensors[1].CreateChannel();
+            var ch3 = _sensors[2].CreateChannel();
 
-            var x1 = s1.GetLatest();
-            var x2 = s2.GetLatest();
-            var x3 = s3.GetLatest();
+            var x1 = ch1.GetLatest();
+            var x2 = ch2.GetLatest();
+            var x3 = ch3.GetLatest();
             var avg = (x1 + x2 + x3) / 3.0;
 
-            s1.AppendReconciled(avg);
-            s2.AppendReconciled(avg);
-            s3.AppendReconciled(avg);
+            ch1.AppendReconciled(avg);
+            ch2.AppendReconciled(avg);
+            ch3.AppendReconciled(avg);
 
-            Close(s1); Close(s2); Close(s3);
-            return new ReconResult(true, DateTimeOffset.UtcNow, avg, "Reconciled latest to average of three sensors.");
+            ((IClientChannel)ch1).Close();
+            ((IClientChannel)ch2).Close();
+            ((IClientChannel)ch3).Close();
+
+            return new ReconResult(true, DateTimeOffset.UtcNow, avg, "Reconciled to average of latests.");
         }
         catch (Exception ex)
         {
+            _log.LogError(ex, "Reconcile failed");
             return new ReconResult(false, DateTimeOffset.UtcNow, double.NaN, $"Reconcile failed: {ex.Message}");
         }
         finally
@@ -45,19 +64,5 @@ public class CoordinatorService : ICoordinatorService
             _inProgress = false;
             _mutex.Release();
         }
-    }
-
-    private ISensorServiceClient Sensor(int port)
-    {
-        var binding = new BasicHttpBinding();
-        var addr = new EndpointAddress($"http://localhost:{port}/sensor");
-        var factory = new ChannelFactory<ISensorServiceClient>(binding, addr);
-        return factory.CreateChannel();
-    }
-
-    private static void Close(object ch)
-    {
-        try { if (ch is IClientChannel cc) cc.Close(); }
-        catch { if (ch is IClientChannel cc2) cc2.Abort(); }
     }
 }

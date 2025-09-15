@@ -136,6 +136,10 @@
             "CoreWCF.Primitives": {
               "target": "Package",
               "version": "[1.8.0, )"
+            },
+            "System.ServiceModel.Primitives": {
+              "target": "Package",
+              "version": "[8.1.2, )"
             }
           },
           "imports": [

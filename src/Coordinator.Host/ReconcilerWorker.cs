@@ -1,31 +1,36 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
-namespace Coordinator.Host;
+using Shared.Contracts;
 
 public class ReconcilerWorker : BackgroundService
 {
     private readonly ILogger<ReconcilerWorker> _log;
-    private readonly CoordinatorService _svc;
+    private readonly CoordinatorService _coord;
 
-    public ReconcilerWorker(ILogger<ReconcilerWorker> log, CoordinatorService svc)
-    {
-        _log = log;
-        _svc = svc;
-    }
+    public ReconcilerWorker(ILogger<ReconcilerWorker> log, CoordinatorService coord)
+    { _log = log; _coord = coord; }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        _log.LogInformation("ReconcilerWorker started");
-        while (!stoppingToken.IsCancellationRequested)
+        var period = TimeSpan.FromMinutes(1);
+        _log.LogInformation("ReconcilerWorker started; period={Period}", period);
+
+        while (!ct.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
-            if (stoppingToken.IsCancellationRequested) break;
+            try
+            {
+                await Task.Delay(period, ct);
+                if (ct.IsCancellationRequested) break;
 
-            _log.LogInformation("Triggering scheduled reconciliation...");
-            var res = await _svc.ReconcileAsync();
-            _log.LogInformation("Reconcile result: Success={Success}, Avg={Avg}, Msg={Msg}",
-                res.Success, res.AveragedValue, res.Message);
+                _log.LogInformation("Scheduled reconcile tick…");
+                var res = await _coord.ReconcileAsync();
+                _log.LogInformation("Scheduled reconcile result: {OK} avg={Avg}", res.Success, res.AveragedValue);
+            }
+            catch (TaskCanceledException) { /* shutdown */ }
+            catch (Exception ex) { _log.LogError(ex, "Scheduled reconcile failed"); }
         }
     }
 }

@@ -1,15 +1,25 @@
-using CoreWCF;
+using System;
+using System.ServiceModel; 
 
-namespace Shared.Contracts;
-
-[ServiceContract(Name = "ISensorService", Namespace = "http://tempuri.org/")]
-public interface ISensorService
+namespace Shared.Contracts
 {
-    [OperationContract] void Start();
-    [OperationContract] void Stop();
-    [OperationContract] double GetLatest();
-    [OperationContract] SensorSnapshot GetSnapshot(TimeSpan lookback);
+    [ServiceContract(Name = "ISensorService", Namespace = "http://tempuri.org/")]
+    public interface ISensorService
+    {
+        [OperationContract(Action = "http://tempuri.org/ISensorService/Start", ReplyAction = "*")]
+        void Start();
 
-    // NEW: lets the coordinator append a reconciled value to the sensor DB
-    [OperationContract] void AppendReconciled(double value);
+        [OperationContract(Action = "http://tempuri.org/ISensorService/Stop", ReplyAction = "*")]
+        void Stop();
+
+        [OperationContract(Action = "http://tempuri.org/ISensorService/GetLatest", ReplyAction = "*")]
+        double GetLatest();
+
+        [OperationContract(Action = "http://tempuri.org/ISensorService/GetSnapshot", ReplyAction = "*")]
+        SensorSnapshot GetSnapshot(TimeSpan lookback);
+
+        // Let the coordinator append a reconciled value to the sensor DB
+        [OperationContract(Action = "http://tempuri.org/ISensorService/AppendReconciled", ReplyAction = "*")]
+        void AppendReconciled(double value);
+    }
 }
