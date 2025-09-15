@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "BR50zNg0G3BImmkXTJ+8S7kjg6LGto0yKOnCpQDJqDw=",
+  "Source": "Sensor.S2.Host",
+  "BasePath": "_content/Sensor.S2.Host",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

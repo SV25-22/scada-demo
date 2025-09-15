@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "4VtFdO01nBsaEKud9Hi+3m/G207rEOl4jAY3lWcpDeI=",
+  "Source": "Sensor.S1.Host",
+  "BasePath": "_content/Sensor.S1.Host",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

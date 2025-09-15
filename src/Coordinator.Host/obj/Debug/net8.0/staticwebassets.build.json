@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "WyOX22Foms7vu1wn2zluFo7UeENs6sNBnVjs6JlPlZA=",
+  "Source": "Coordinator.Host",
+  "BasePath": "_content/Coordinator.Host",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

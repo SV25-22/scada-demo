@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "CA10WEGTm+p4JWvZ4E29QVR47BvymQNuSYyE3ySP83I=",
+  "Source": "Sensor.S3.Host",
+  "BasePath": "_content/Sensor.S3.Host",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

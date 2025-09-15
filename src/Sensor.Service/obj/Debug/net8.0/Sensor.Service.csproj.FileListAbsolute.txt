@@ -1,0 +1,16 @@
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\bin\Debug\net8.0\Sensor.Service.deps.json
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\bin\Debug\net8.0\Sensor.Service.dll
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\bin\Debug\net8.0\Sensor.Service.pdb
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\bin\Debug\net8.0\Shared.Contracts.dll
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\bin\Debug\net8.0\Shared.Contracts.pdb
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.csproj.AssemblyReference.cache
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.AssemblyInfoInputs.cache
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.AssemblyInfo.cs
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.csproj.CoreCompileInputs.cache
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.sourcelink.json
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.S.49C38CBF.Up2Date
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.dll
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\refint\Sensor.Service.dll
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\Sensor.Service.pdb
+C:\Users\sasa2\OneDrive\Desktop\scada-demo\src\Sensor.Service\obj\Debug\net8.0\ref\Sensor.Service.dll

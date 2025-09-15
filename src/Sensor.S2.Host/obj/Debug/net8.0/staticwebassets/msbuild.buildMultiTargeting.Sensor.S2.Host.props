@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Sensor.S2.Host.props" />
+</Project>
