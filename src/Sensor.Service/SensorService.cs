@@ -48,7 +48,6 @@ public class SensorService : Shared.Contracts.ISensorService
         };
     }
 
-    // NEW
     public void AppendReconciled(double value)
     {
         _db.Readings.Add(new SensorReading

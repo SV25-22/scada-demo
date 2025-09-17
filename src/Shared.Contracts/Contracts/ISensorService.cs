@@ -18,7 +18,6 @@ namespace Shared.Contracts
         [OperationContract(Action = "http://tempuri.org/ISensorService/GetSnapshot", ReplyAction = "*")]
         SensorSnapshot GetSnapshot(TimeSpan lookback);
 
-        // Let the coordinator append a reconciled value to the sensor DB
         [OperationContract(Action = "http://tempuri.org/ISensorService/AppendReconciled", ReplyAction = "*")]
         void AppendReconciled(double value);
     }

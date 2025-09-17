@@ -13,7 +13,7 @@ var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((ctx, services) =>
     {
         services.AddServiceModelServices();
-        services.AddSingleton<CoordinatorService>();         // WCF service impl
+        services.AddSingleton<CoordinatorService>();
         services.AddHostedService<ReconcilerWorker>();       // minute scheduler
 
         // channel factories used by Coordinator to call sensors

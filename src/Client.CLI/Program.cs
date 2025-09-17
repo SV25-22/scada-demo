@@ -3,14 +3,14 @@ using System.Linq;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Client.CLI.Contracts; // your client-side WCF interfaces + Ports
-using Shared.Contracts;     // ReconResult, etc.
+using Client.CLI.Contracts;
+using Shared.Contracts;
 
 class Program
 {
     static async Task<int> Main(string[] args)
     {
-        // ---- CLI args (optional) -------------------------------------------
+        // CLI args (optional)
         // --tol <double>   : quorum tolerance (default 5.0)
         // --interval <ms>  : watch loop interval in ms (default 5000)
         // --watch          : keep running; omit for single-shot
@@ -21,7 +21,6 @@ class Program
         using var cts = new CancellationTokenSource();
         Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
 
-        // ---- Channels -------------------------------------------------------
         var coord = CreateCoordinator();
         var s1 = CreateSensor(Ports.S1);
         var s2 = CreateSensor(Ports.S2);
@@ -76,7 +75,6 @@ class Program
         }
     }
 
-    // ---- Helpers ------------------------------------------------------------
 
     static (double x1, double x2, double x3) GetLatests(
         ISensorServiceClient s1, ISensorServiceClient s2, ISensorServiceClient s3)

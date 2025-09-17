@@ -1,6 +1,6 @@
 using CoreWCF;
 using CoreWCF.Configuration;
-using CoreWCF.Description;                 // <-- add this for debug behavior
+using CoreWCF.Description;
 using Microsoft.EntityFrameworkCore;
 using Sensor.Service;
 using Sensor.Service.Data;
@@ -35,7 +35,7 @@ app.UseServiceModel(serviceBuilder =>
 {
     serviceBuilder.AddService<SensorService>();
 
-    // (optional but helpful) include server exception details back to client
+    // exception debugging
     serviceBuilder.ConfigureServiceHostBase<SensorService>(host =>
     {
         var dbg = host.Description.Behaviors.Find<ServiceDebugBehavior>();

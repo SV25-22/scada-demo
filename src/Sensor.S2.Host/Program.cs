@@ -9,7 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://localhost:5012");
 builder.Services.AddServiceModelServices();
 
-// Data folder beside the executable
 var dataDir = Path.Combine(AppContext.BaseDirectory, "data");
 Directory.CreateDirectory(dataDir);
 
@@ -17,7 +16,7 @@ Directory.CreateDirectory(dataDir);
 var cs = $"Data Source={Path.Combine(dataDir, "s2.db")}";
 builder.Services.AddDbContext<SensorDbContext>(opt => opt.UseSqlite(cs));
 
-// Sampling switch & hosted worker
+// Sampling switch
 builder.Services.AddSingleton<ISamplingSwitch, SamplingSwitch>();
 builder.Services.AddHostedService(sp => new SamplerWorker(
     sp.GetRequiredService<ILogger<SamplerWorker>>(),
@@ -26,7 +25,6 @@ builder.Services.AddHostedService(sp => new SamplerWorker(
     "S2"
 ));
 
-// CoreWCF service
 builder.Services.AddScoped<SensorService>(sp =>
     new SensorService("S2",
         sp.GetRequiredService<SensorDbContext>(),
